@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.teachmeskills</groupId>
     <artifactId>TMS_Booking_Project</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.1</version>
     <name>TMS_Booking_Project</name>
     <description>TMS_Booking_Project</description>
     <url/>
@@ -127,5 +127,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>
