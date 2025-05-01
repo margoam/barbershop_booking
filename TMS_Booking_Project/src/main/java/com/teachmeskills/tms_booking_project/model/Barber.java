@@ -30,7 +30,7 @@ public class Barber {
     @Column(length = 50)
     private String phone;
 
-    @Column(precision = 5, scale = 0)
+    @Column(precision = 5)
     private BigDecimal rating;
 
     @OneToMany(mappedBy = "barber")

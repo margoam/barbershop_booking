@@ -24,7 +24,7 @@ public class Booking {
     @Column(name = "appointment_time", nullable = false)
     private LocalDateTime appointmentTime;
 
-    @Column(name = "price_paid", nullable = false, precision = 20, scale = 0)
+    @Column(name = "price_paid", nullable = false, precision = 20)
     private BigDecimal pricePaid;
 
     @Column(name = "created_at", nullable = false)
