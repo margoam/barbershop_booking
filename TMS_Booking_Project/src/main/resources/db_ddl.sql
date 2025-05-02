@@ -75,3 +75,23 @@ CREATE TABLE IF NOT EXISTS public.booking
 
 ALTER TABLE IF EXISTS public.booking
     OWNER to user1;
+
+CREATE TABLE IF NOT EXISTS public.barber_schedule
+(
+    id bigint NOT NULL DEFAULT nextval('barber_schedule_id_seq'::regclass),
+    barber_id bigint NOT NULL DEFAULT nextval('barber_schedule_barber_id_seq'::regclass),
+    start_time timestamp without time zone NOT NULL,
+    end_time timestamp without time zone NOT NULL,
+    is_available boolean NOT NULL DEFAULT true,
+    is_booked boolean NOT NULL DEFAULT false,
+    CONSTRAINT barber_schedule_pkey PRIMARY KEY (id),
+    CONSTRAINT barber_id FOREIGN KEY (barber_id)
+    REFERENCES public.barber (id) MATCH SIMPLE
+                         ON UPDATE NO ACTION
+                         ON DELETE NO ACTION
+    )
+
+    TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.barber_schedule
+    OWNER to user1;
