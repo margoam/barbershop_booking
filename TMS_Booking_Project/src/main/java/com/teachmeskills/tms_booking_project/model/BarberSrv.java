@@ -15,7 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Service {
+public class BarberSrv {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
