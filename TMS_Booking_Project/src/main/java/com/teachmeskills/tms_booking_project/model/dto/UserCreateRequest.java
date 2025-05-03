@@ -2,8 +2,8 @@ package com.teachmeskills.tms_booking_project.model.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-
 
 /**
  *
@@ -27,6 +27,7 @@ public record UserCreateRequest(
         @NotBlank(message = "Role is required")
         String role,
 
+        @NotNull
         boolean isSubscribed
 ) {
 }

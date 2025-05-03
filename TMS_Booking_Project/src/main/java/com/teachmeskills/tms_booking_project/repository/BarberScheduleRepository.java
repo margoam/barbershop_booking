@@ -8,6 +8,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface BarberScheduleRepository extends JpaRepository<BarberSchedule, Long> {
-    List<BarberSchedule> findByBarberAndIsAvailableTrueAndIsBookedFalseAndStartTimeAfter(
+    List<BarberSchedule> findByBarberAndAvailableTrueAndBookedFalseAndStartTimeAfter(
             Barber barber, LocalDateTime time);
 }

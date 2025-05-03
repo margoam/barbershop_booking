@@ -23,6 +23,7 @@ CREATE TABLE IF NOT EXISTS public.service
     description character varying(200) COLLATE pg_catalog."default",
     price numeric NOT NULL,
     active boolean NOT NULL DEFAULT true,
+    duration integer NOT NULL DEFAULT 60,
     CONSTRAINT service_pkey PRIMARY KEY (id)
     )
 

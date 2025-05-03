@@ -1,6 +1,7 @@
 package com.teachmeskills.tms_booking_project.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.FutureOrPresent;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -22,15 +23,17 @@ public class BarberSchedule {
     @JoinColumn(name = "barber_id", nullable = false)
     private Barber barber;
 
+    @FutureOrPresent
     @Column(name = "start_time", nullable = false)
     private LocalDateTime startTime;
 
+    @FutureOrPresent
     @Column(name = "end_time", nullable = false)
     private LocalDateTime endTime;
 
     @Column(name = "is_available", nullable = false)
-    private boolean isAvailable = true;
+    private boolean available = true;
 
     @Column(name = "is_booked", nullable = false)
-    private boolean isBooked = false;
+    private boolean booked = false;
 }

@@ -1,6 +1,8 @@
 package com.teachmeskills.tms_booking_project.controller;
 
 import com.teachmeskills.tms_booking_project.model.Booking;
+import com.teachmeskills.tms_booking_project.model.dto.BookingRequest;
+import com.teachmeskills.tms_booking_project.model.dto.BookingResponse;
 import com.teachmeskills.tms_booking_project.service.BookingService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -17,13 +19,16 @@ public class BookingController {
     private final BookingService bookingService;
 
     @GetMapping("/bookings")
-    public List<Booking> getAllBookings() {
-        return bookingService.getAll();
+    public List<BookingResponse> getAllBookings() {
+        return bookingService.getAll().stream()
+                .map(bookingService::mapToResponse)
+                .toList();
     }
 
     @PostMapping("/bookings")
-    public Booking createBooking(@RequestBody @Valid Booking booking) {
-        return bookingService.create(booking);
+    public ResponseEntity<BookingResponse> createBooking(@RequestBody @Valid BookingRequest request) {
+        Booking booking = bookingService.createBooking(request);
+        return ResponseEntity.ok(bookingService.mapToResponse(booking));
     }
 
     @PutMapping("/bookings/{id}")

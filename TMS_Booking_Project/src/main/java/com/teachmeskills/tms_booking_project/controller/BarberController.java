@@ -21,7 +21,7 @@ class BarberController {
         return barberService.getAll();
     }
 
-    @PostMapping
+    @PostMapping("/create")
     public Barber createBarber(@RequestBody @Valid Barber barber) {
         return barberService.create(barber);
     }

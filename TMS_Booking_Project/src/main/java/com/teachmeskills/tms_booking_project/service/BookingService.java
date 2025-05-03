@@ -1,17 +1,25 @@
 package com.teachmeskills.tms_booking_project.service;
 
-import com.teachmeskills.tms_booking_project.model.Booking;
-import com.teachmeskills.tms_booking_project.repository.BookingRepository;
+import com.teachmeskills.tms_booking_project.model.*;
+import com.teachmeskills.tms_booking_project.model.dto.BookingRequest;
+import com.teachmeskills.tms_booking_project.model.dto.BookingResponse;
+import com.teachmeskills.tms_booking_project.repository.*;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class BookingService {
 
+    private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
+    private final BarberScheduleRepository barberScheduleRepository;
+    private final BarberRepository barberRepository;
+    private final ServiceRepository serviceRepository;
 
     public List<Booking> getAll() {
         return bookingRepository.findAll();
@@ -22,8 +30,38 @@ public class BookingService {
                 .orElseThrow(() -> new IllegalArgumentException("Booking not found"));
     }
 
-    public Booking create(Booking booking) {
-        return bookingRepository.save(booking);
+    @Transactional
+    public Booking createBooking(BookingRequest bookingRequest) {
+        User user = userRepository.findById(bookingRequest.userId())
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        Barber barber = barberRepository.findById(bookingRequest.barberId())
+                .orElseThrow(() -> new IllegalArgumentException("Barber not found"));
+        BarberSrv srv = serviceRepository.findById(bookingRequest.serviceId())
+                .orElseThrow(() -> new IllegalArgumentException("Service not found"));
+
+        BarberSchedule schedule = barberScheduleRepository.findByBarberAndAvailableTrueAndBookedFalseAndStartTimeAfter(
+                        barber, bookingRequest.appointmentTime())
+                .stream()
+                .filter(s -> s.getStartTime().equals(bookingRequest.appointmentTime()))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Selected time is unavailable"));
+
+        Booking booking = Booking.builder()
+                .user(user)
+                .barber(barber)
+                .service(srv)
+                .appointmentTime(bookingRequest.appointmentTime())
+                .pricePaid(bookingRequest.pricePaid())
+                .status(String.valueOf(Status.CONFIRMED))
+                .createdAt(LocalDateTime.now())
+                .build();
+
+        Booking saved = bookingRepository.save(booking);
+
+        schedule.setBooked(true);
+        barberScheduleRepository.save(schedule);
+
+        return saved;
     }
 
     public Booking update(Long id, Booking updated) {
@@ -40,6 +78,22 @@ public class BookingService {
 
     public void delete(Long id) {
         bookingRepository.deleteById(id);
+    }
+
+    public BookingResponse mapToResponse(Booking booking) {
+        return new BookingResponse(
+                booking.getId(),
+                booking.getUser().getId(),
+                booking.getUser().getFullName(),
+                booking.getBarber().getId(),
+                booking.getBarber().getFullName(),
+                booking.getService().getId(),
+                booking.getService().getName(),
+                booking.getPricePaid(),
+                booking.getStatus(),
+                booking.getAppointmentTime(),
+                booking.getCreatedAt()
+        );
     }
 }
 

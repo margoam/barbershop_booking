@@ -35,4 +35,8 @@ public class BarberSrv {
 
     @OneToMany(mappedBy = "service")
     private List<Booking> bookings;
+
+    @Column(name = "duration", nullable = false)
+    private int durationMinutes;
+
 }
