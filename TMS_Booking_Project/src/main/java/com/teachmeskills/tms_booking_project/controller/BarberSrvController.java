@@ -1,6 +1,5 @@
 package com.teachmeskills.tms_booking_project.controller;
 
-import com.teachmeskills.tms_booking_project.model.Barber;
 import com.teachmeskills.tms_booking_project.model.BarberSrv;
 import com.teachmeskills.tms_booking_project.service.BarberServiceService;
 import jakarta.validation.Valid;
@@ -9,7 +8,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.crypto.spec.OAEPParameterSpec;
 import java.util.List;
 import java.util.Optional;
 

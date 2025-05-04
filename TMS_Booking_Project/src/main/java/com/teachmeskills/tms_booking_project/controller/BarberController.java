@@ -48,7 +48,7 @@ class BarberController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Barber> updateBarber(@PathVariable Long id, @RequestBody Barber barber) {
-        Optional<Barber> result = barberService.update(barber.getId(), barber);
+        Optional<Barber> result = barberService.update(id, barber);
         if (result.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
