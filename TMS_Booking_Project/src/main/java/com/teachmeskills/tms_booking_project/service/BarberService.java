@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -26,16 +27,17 @@ public class BarberService {
         return barberRepository.save(barber);
     }
 
-    public Barber update(Long id, Barber updatedBarber) {
+    public Optional<Barber> update(Long id, Barber updatedBarber) {
         Barber existing = getById(id);
         existing.setFullName(updatedBarber.getFullName());
         existing.setEmail(updatedBarber.getEmail());
         existing.setPhone(updatedBarber.getPhone());
         existing.setRating(updatedBarber.getRating());
-        return barberRepository.save(existing);
+        return Optional.of(barberRepository.save(existing));
     }
 
-    public void delete(Long id) {
+    public boolean delete(Long id) {
         barberRepository.deleteById(id);
+        return true;
     }
 }

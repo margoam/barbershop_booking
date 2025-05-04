@@ -35,8 +35,9 @@ public class BarberServiceService {
         return serviceRepository.save(existing);
     }
 
-    public void delete(Long id) {
+    public boolean delete(Long id) {
         serviceRepository.deleteById(id);
+        return true;
     }
 }
 

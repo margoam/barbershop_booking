@@ -76,8 +76,9 @@ public class BookingService {
         return bookingRepository.save(existing);
     }
 
-    public void delete(Long id) {
+    public boolean delete(Long id) {
         bookingRepository.deleteById(id);
+        return true;
     }
 
     public BookingResponse mapToResponse(Booking booking) {

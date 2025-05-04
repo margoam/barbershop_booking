@@ -43,8 +43,9 @@ public class BarberScheduleService {
         return barberScheduleRepository.save(existing);
     }
 
-    public void delete(Long id) {
+    public boolean delete(Long id) {
         barberScheduleRepository.deleteById(id);
+        return true;
     }
 
     public List<AvailableSlotsResponse> getAvailableSlots(Long barberId, Long serviceId) {

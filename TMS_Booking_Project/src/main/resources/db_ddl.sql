@@ -53,10 +53,10 @@ CREATE TABLE IF NOT EXISTS public.booking
     appointment_time timestamp without time zone NOT NULL,
     price_paid numeric(20,0) NOT NULL,
     created_at timestamp without time zone NOT NULL,
-    "status" character varying(20) COLLATE pg_catalog."default" NOT NULL,
-    user_id bigint NOT NULL DEFAULT nextval('booking_user_id_seq'::regclass),
-    barber_id bigint NOT NULL DEFAULT nextval('booking_barber_id_seq'::regclass),
-    service_id bigint NOT NULL DEFAULT nextval('booking_service_id_seq'::regclass),
+    status character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    user_id bigint NOT NULL,
+    barber_id bigint NOT NULL,
+    service_id bigint NOT NULL,
     CONSTRAINT booking_pkey PRIMARY KEY (id),
     CONSTRAINT barber_id FOREIGN KEY (barber_id)
     REFERENCES public.barber (id) MATCH SIMPLE
@@ -80,7 +80,7 @@ ALTER TABLE IF EXISTS public.booking
 CREATE TABLE IF NOT EXISTS public.barber_schedule
 (
     id bigint NOT NULL DEFAULT nextval('barber_schedule_id_seq'::regclass),
-    barber_id bigint NOT NULL DEFAULT nextval('barber_schedule_barber_id_seq'::regclass),
+    barber_id bigint NOT NULL,
     start_time timestamp without time zone NOT NULL,
     end_time timestamp without time zone NOT NULL,
     is_available boolean NOT NULL DEFAULT true,

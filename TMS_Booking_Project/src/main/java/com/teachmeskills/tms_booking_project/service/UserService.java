@@ -87,11 +87,12 @@ public class UserService {
         return mapToResponse(userRepository.save(user));
     }
 
-    public void deleteUser(Long id) {
+    public boolean deleteUser(Long id) {
         userRepository.deleteById(id);
+        return true;
     }
 
-    private UserResponse mapToResponse(User user) {
+    public UserResponse mapToResponse(User user) {
         return new UserResponse(
                 user.getId(),
                 user.getFullName(),

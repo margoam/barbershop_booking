@@ -6,10 +6,12 @@ import com.teachmeskills.tms_booking_project.model.dto.UserResponse;
 import com.teachmeskills.tms_booking_project.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/users")
@@ -18,14 +20,22 @@ public class UserController {
 
     private final UserService userService;
 
-    @GetMapping
-    public List<UserResponse> getAllUsers() {
-        return userService.getAllUsers();
+    @GetMapping("/all")
+    public ResponseEntity<List<UserResponse>> getAllUsers() {
+        List<UserResponse> userResponses = userService.getAllUsers();
+        if (userResponses.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(userResponses, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public UserResponse getUserById(@PathVariable Long id) {
-        return userService.getUserById(id);
+    public ResponseEntity<UserResponse> getUserById(@PathVariable Long id) {
+        Optional<UserResponse> userResponse = Optional.ofNullable(userService.getUserById(id));
+        if (userResponse.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(userResponse.get(), HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
@@ -40,12 +50,20 @@ public class UserController {
     }
 
     @PostMapping("/admin")
-    public UserResponse createUser(@RequestBody @Valid UserCreateRequest request) {
-        return userService.createUser(request);
+    public ResponseEntity<UserResponse> createUser(@RequestBody @Valid UserCreateRequest request) {
+        Optional<UserResponse> user = Optional.ofNullable(userService.createUser(request));
+        if (user.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
+        return new ResponseEntity<>(user.get(), HttpStatus.CREATED);
     }
 
     @PostMapping("/create")
-    public UserResponse registerUser(@RequestBody @Valid UserRegistrationRequest request) {
-        return userService.register(request);
+    public ResponseEntity<UserResponse> registerUser(@RequestBody @Valid UserRegistrationRequest request) {
+        Optional<UserResponse> user = Optional.ofNullable(userService.register(request));
+        if (user.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
+        return new ResponseEntity<>(user.get(), HttpStatus.CREATED);
     }
 }
