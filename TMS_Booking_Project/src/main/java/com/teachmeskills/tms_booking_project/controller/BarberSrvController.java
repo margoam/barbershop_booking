@@ -37,7 +37,7 @@ class BarberSrvController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<BarberSrv> updateService(@PathVariable Long id, @RequestBody BarberSrv service) {
+    public ResponseEntity<BarberSrv> updateService(@PathVariable Long id, @RequestBody @Valid BarberSrv service) {
         Optional<BarberSrv> barberSrv = Optional.ofNullable(serviceService.update(id, service));
         if (barberSrv.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.CONFLICT);

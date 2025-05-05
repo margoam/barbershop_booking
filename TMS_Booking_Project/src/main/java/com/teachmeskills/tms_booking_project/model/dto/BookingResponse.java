@@ -1,5 +1,7 @@
 package com.teachmeskills.tms_booking_project.model.dto;
 
+import com.teachmeskills.tms_booking_project.model.Status;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -12,7 +14,7 @@ public record BookingResponse(
         Long serviceId,
         String serviceName,
         BigDecimal pricePaid,
-        String status,
+        Status status,
         LocalDateTime appointmentTime,
         LocalDateTime createdAt
 ) {

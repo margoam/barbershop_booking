@@ -2,7 +2,10 @@ package com.teachmeskills.tms_booking_project.service;
 
 import com.teachmeskills.tms_booking_project.model.BarberSrv;
 import com.teachmeskills.tms_booking_project.repository.ServiceRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,6 +15,7 @@ import java.util.List;
 public class BarberServiceService {
 
     private final ServiceRepository serviceRepository;
+    private static final Logger logger = LoggerFactory.getLogger(BarberServiceService.class);
 
     public List<BarberSrv> getAll() {
         return serviceRepository.findAll();
@@ -23,20 +27,24 @@ public class BarberServiceService {
     }
 
     public BarberSrv create(BarberSrv service) {
+        logger.info("Created service with id: {}", service.getId());
         return serviceRepository.save(service);
     }
 
+    @Transactional
     public BarberSrv update(Long id, BarberSrv updatedService) {
         BarberSrv existing = getById(id);
         existing.setName(updatedService.getName());
         existing.setDescription(updatedService.getDescription());
         existing.setPrice(updatedService.getPrice());
         existing.setActive(updatedService.isActive());
+        logger.info("Updated service with id: {}", existing.getId());
         return serviceRepository.save(existing);
     }
 
     public boolean delete(Long id) {
         serviceRepository.deleteById(id);
+        logger.info("Removed service with id: {}", id);
         return true;
     }
 }

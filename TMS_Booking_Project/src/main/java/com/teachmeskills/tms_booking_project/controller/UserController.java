@@ -3,6 +3,7 @@ package com.teachmeskills.tms_booking_project.controller;
 import com.teachmeskills.tms_booking_project.model.dto.UserCreateRequest;
 import com.teachmeskills.tms_booking_project.model.dto.UserRegistrationRequest;
 import com.teachmeskills.tms_booking_project.model.dto.UserResponse;
+import com.teachmeskills.tms_booking_project.model.dto.UserUpdateRequest;
 import com.teachmeskills.tms_booking_project.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -39,15 +40,28 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public UserResponse updateUser(@PathVariable Long id, @RequestBody @Valid UserCreateRequest request) {
-        return userService.updateUser(id, request);
+    public ResponseEntity<UserResponse> updateUser(
+            @PathVariable Long id,
+            @RequestBody @Valid UserUpdateRequest request) {
+
+        try {
+            UserResponse updatedUser = userService.updateUser(id, request);
+            return ResponseEntity.ok(updatedUser);
+        } catch (IllegalArgumentException e) {
+            return switch (e.getMessage()) {
+                case "User not found" -> ResponseEntity.notFound().build();
+                case "Email already in use" -> ResponseEntity.status(HttpStatus.CONFLICT).build();
+                case "No changes detected" -> ResponseEntity.status(HttpStatus.NOT_MODIFIED).build();
+                default -> ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            };
+        }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+    public ResponseEntity<HttpStatus> deleteUser(@PathVariable Long id) {
         boolean result = userService.deleteUser(id);
         if (!result) {
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return ResponseEntity.noContent().build();
     }

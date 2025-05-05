@@ -48,7 +48,7 @@ class BarberScheduleController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<BarberSchedule> updateSchedule(@PathVariable Long id, @RequestBody BarberSchedule schedule) {
+    public ResponseEntity<BarberSchedule> updateSchedule(@PathVariable Long id, @RequestBody @Valid BarberSchedule schedule) {
         Optional<BarberSchedule> barberSchedule = Optional.ofNullable(scheduleService.update(id, schedule));
         if (barberSchedule.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.CONFLICT);

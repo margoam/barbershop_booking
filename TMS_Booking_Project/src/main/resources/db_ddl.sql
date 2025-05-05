@@ -61,15 +61,15 @@ CREATE TABLE IF NOT EXISTS public.booking
     CONSTRAINT barber_id FOREIGN KEY (barber_id)
     REFERENCES public.barber (id) MATCH SIMPLE
                                ON UPDATE NO ACTION
-                               ON DELETE NO ACTION,
+                               ON DELETE CASCADE ,
     CONSTRAINT service_id FOREIGN KEY (service_id)
     REFERENCES public.service (id) MATCH SIMPLE
                                ON UPDATE NO ACTION
-                               ON DELETE NO ACTION,
+                               ON DELETE CASCADE ,
     CONSTRAINT user_id FOREIGN KEY (user_id)
     REFERENCES public."user" (id) MATCH SIMPLE
                                ON UPDATE NO ACTION
-                               ON DELETE NO ACTION
+                               ON DELETE CASCADE
     )
 
     TABLESPACE pg_default;
@@ -89,7 +89,7 @@ CREATE TABLE IF NOT EXISTS public.barber_schedule
     CONSTRAINT barber_id FOREIGN KEY (barber_id)
     REFERENCES public.barber (id) MATCH SIMPLE
                          ON UPDATE NO ACTION
-                         ON DELETE NO ACTION
+                         ON DELETE CASCADE
     )
 
     TABLESPACE pg_default;

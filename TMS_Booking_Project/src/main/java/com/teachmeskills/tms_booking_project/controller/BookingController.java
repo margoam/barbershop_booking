@@ -50,7 +50,7 @@ public class BookingController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<BookingResponse> updateBooking(@PathVariable Long id, @RequestBody Booking request) {
+    public ResponseEntity<BookingResponse> updateBooking(@PathVariable Long id, @RequestBody @Valid Booking request) {
         Optional<Booking> booking = Optional.ofNullable(bookingService.update(id, request));
         if (booking.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
