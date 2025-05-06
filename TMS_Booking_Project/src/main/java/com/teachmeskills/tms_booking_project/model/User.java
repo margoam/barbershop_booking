@@ -1,10 +1,7 @@
 package com.teachmeskills.tms_booking_project.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -12,6 +9,8 @@ import java.util.List;
 @Entity
 @Table(name = "\"user\"")
 @Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -27,7 +26,7 @@ public class User {
     @Column(nullable = false, unique = true, length = 50)
     private String email;
 
-    @Column(nullable = false, length = 16)
+    @Column(nullable = false, length = 60)
     private String password;
 
     @Column(nullable = false, length = 10)

@@ -6,16 +6,21 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class BarberServiceService {
 
     private final ServiceRepository serviceRepository;
     private static final Logger logger = LoggerFactory.getLogger(BarberServiceService.class);
+
+    @Autowired
+    public BarberServiceService(ServiceRepository serviceRepository) {
+        this.serviceRepository = serviceRepository;
+    }
 
     public List<BarberSrv> getAll() {
         return serviceRepository.findAll();

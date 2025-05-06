@@ -11,19 +11,27 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
+
 public class BarberScheduleService {
 
     private final BarberScheduleRepository barberScheduleRepository;
     private final BarberRepository barberRepository;
     private final ServiceRepository serviceRepository;
     private static final Logger logger = LoggerFactory.getLogger(BarberScheduleService.class);
+
+    @Autowired
+    public BarberScheduleService(BarberScheduleRepository barberScheduleRepository, BarberRepository barberRepository, ServiceRepository serviceRepository) {
+        this.barberScheduleRepository = barberScheduleRepository;
+        this.barberRepository = barberRepository;
+        this.serviceRepository = serviceRepository;
+    }
 
     public List<BarberSchedule> getAll() {
         return barberScheduleRepository.findAll();

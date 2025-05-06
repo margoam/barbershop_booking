@@ -8,6 +8,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -16,7 +17,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class BookingService {
 
     private final UserRepository userRepository;
@@ -25,6 +25,15 @@ public class BookingService {
     private final BarberRepository barberRepository;
     private final ServiceRepository serviceRepository;
     private static final Logger logger = LoggerFactory.getLogger(BookingService.class);
+
+    @Autowired
+    public BookingService(UserRepository userRepository, BookingRepository bookingRepository, BarberScheduleRepository barberScheduleRepository, BarberRepository barberRepository, ServiceRepository serviceRepository) {
+        this.userRepository = userRepository;
+        this.bookingRepository = bookingRepository;
+        this.barberScheduleRepository = barberScheduleRepository;
+        this.barberRepository = barberRepository;
+        this.serviceRepository = serviceRepository;
+    }
 
     public List<Booking> getAll() {
         return bookingRepository.findAll();

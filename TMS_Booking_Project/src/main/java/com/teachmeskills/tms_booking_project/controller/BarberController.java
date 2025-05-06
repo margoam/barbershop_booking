@@ -4,7 +4,7 @@ import com.teachmeskills.tms_booking_project.model.Barber;
 import com.teachmeskills.tms_booking_project.service.BarberService;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,10 +14,14 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/barbers")
-@RequiredArgsConstructor
 class BarberController {
 
     private final BarberService barberService;
+
+    @Autowired
+    BarberController(BarberService barberService) {
+        this.barberService = barberService;
+    }
 
     @GetMapping("/all")
     public ResponseEntity<List<Barber>> getAllBarbers() {
