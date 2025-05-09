@@ -33,8 +33,8 @@ DO $$
         FOR barber_record IN SELECT id FROM public.barber LOOP
                 FOR current_day IN
                     SELECT generate_series(
-                                   '2024-05-01'::DATE,
-                                   '2024-06-30'::DATE,
+                                   '2025-05-01'::DATE,
+                                   '2025-06-30'::DATE,
                                    '1 day'::INTERVAL
                            )::DATE
                     LOOP

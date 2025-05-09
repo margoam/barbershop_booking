@@ -8,7 +8,6 @@ import com.teachmeskills.tms_booking_project.model.dto.UserResponse;
 import com.teachmeskills.tms_booking_project.model.dto.UserUpdateRequest;
 import com.teachmeskills.tms_booking_project.repository.UserRepository;
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -127,6 +126,7 @@ public class UserService {
         return mapToResponse(userRepository.save(user));
     }
 
+    @Transactional
     public boolean deleteUser(Long id) {
         if (userRepository.existsById(id)) {
             userRepository.deleteById(id);

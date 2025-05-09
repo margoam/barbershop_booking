@@ -5,6 +5,11 @@ import com.teachmeskills.tms_booking_project.model.dto.UserRegistrationRequest;
 import com.teachmeskills.tms_booking_project.model.dto.UserResponse;
 import com.teachmeskills.tms_booking_project.model.dto.UserUpdateRequest;
 import com.teachmeskills.tms_booking_project.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,10 +22,12 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
+@Tag(name = "User Management", description = "API for user operations")
 public class UserController {
 
     private final UserService userService;
 
+    @Operation(summary = "Get all users")
     @GetMapping("/all")
     public ResponseEntity<List<UserResponse>> getAllUsers() {
         List<UserResponse> userResponses = userService.getAllUsers();
@@ -30,8 +37,11 @@ public class UserController {
         return new ResponseEntity<>(userResponses, HttpStatus.OK);
     }
 
+    @Operation(summary = "Get user by ID")
+    @ApiResponse(responseCode = "404", description = "User not found")
     @GetMapping("/{id}")
-    public ResponseEntity<UserResponse> getUserById(@PathVariable Long id) {
+    public ResponseEntity<UserResponse> getUserById(@Parameter(description = "ID of the user")
+                                                        @PathVariable Long id) {
         Optional<UserResponse> userResponse = Optional.ofNullable(userService.getUserById(id));
         if (userResponse.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -39,8 +49,10 @@ public class UserController {
         return new ResponseEntity<>(userResponse.get(), HttpStatus.OK);
     }
 
+    @Operation(summary = "Update user")
     @PutMapping("/{id}")
     public ResponseEntity<UserResponse> updateUser(
+            @Parameter(description = "ID of the user to update")
             @PathVariable Long id,
             @RequestBody @Valid UserUpdateRequest request) {
 
@@ -57,15 +69,19 @@ public class UserController {
         }
     }
 
+    @Operation(summary = "Delete user")
     @DeleteMapping("/{id}")
-    public ResponseEntity<HttpStatus> deleteUser(@PathVariable Long id) {
-        boolean result = userService.deleteUser(id);
-        if (!result) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    public ResponseEntity<HttpStatus> deleteUser(@Parameter(description = "ID of the user to delete")
+                                                     @PathVariable Long id) {
+        try {
+            userService.deleteUser(id);
+            return ResponseEntity.noContent().build();
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.noContent().build();
     }
 
+    @Operation(summary = "Create user (admin only)")
     @PostMapping("/admin")
     public ResponseEntity<UserResponse> createUser(@RequestBody @Valid UserCreateRequest request) {
         Optional<UserResponse> user = Optional.ofNullable(userService.createUser(request));
@@ -75,6 +91,7 @@ public class UserController {
         return new ResponseEntity<>(user.get(), HttpStatus.CREATED);
     }
 
+    @Operation(summary = "Register new user")
     @PostMapping("/create")
     public ResponseEntity<UserResponse> registerUser(@RequestBody @Valid UserRegistrationRequest request) {
         Optional<UserResponse> user = Optional.ofNullable(userService.register(request));
