@@ -19,6 +19,7 @@ import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static com.teachmeskills.tms_booking_project.constant.WORKING_HOUR_END;
 import static com.teachmeskills.tms_booking_project.constant.WORKING_HOUR_START;
@@ -44,8 +45,12 @@ public class BarberScheduleService {
     }
 
     public BarberSchedule getById(Long id) {
-        return barberScheduleRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Schedule not found"));
+        Optional<BarberSchedule> barberSchedule = barberScheduleRepository.findById(id);
+        if (barberSchedule.isPresent()) {
+            return barberSchedule.get();
+        } else {
+            throw new IllegalArgumentException("Schedule not found");
+        }
     }
 
     @Transactional
@@ -111,6 +116,7 @@ public class BarberScheduleService {
     }
 
     public List<AvailableSlotsResponse> getAvailableSlots(Long barberId, Long serviceId) {
+
         Barber barber = barberRepository.findById(barberId)
                 .orElseThrow(() -> new IllegalArgumentException("Barber not found"));
 
@@ -165,5 +171,6 @@ public class BarberScheduleService {
             throw new IllegalArgumentException("Minimum slot duration is 30 minutes");
         }
     }
+
 }
 

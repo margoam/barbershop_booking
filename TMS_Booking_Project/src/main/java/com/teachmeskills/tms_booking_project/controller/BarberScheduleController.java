@@ -46,20 +46,20 @@ class BarberScheduleController {
     }
 
     @Operation(summary = "Create new schedule")
-    @PostMapping
-    public ResponseEntity<?> createSchedule(@RequestBody @Valid BarberSchedule schedule) {
+    @PostMapping("/create")
+    public ResponseEntity<BarberSchedule> createSchedule(@RequestBody @Valid BarberSchedule schedule) {
         try {
             return new ResponseEntity<>(scheduleService.create(schedule), HttpStatus.CREATED);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.notFound().build();
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().build();
         }
     }
 
     @Operation(summary = "Update schedule")
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateSchedule(
+    public ResponseEntity<BarberSchedule> updateSchedule(
             @Parameter(description = "ID of schedule to be updated")
             @PathVariable Long id,
             @RequestBody @Valid BarberScheduleUpdateRequest request) {
@@ -68,7 +68,7 @@ class BarberScheduleController {
         } catch (EntityNotFoundException e) {
             return ResponseEntity.notFound().build();
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().build();
         }
     }
 

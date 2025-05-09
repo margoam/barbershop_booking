@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.info.Contact;
 import io.swagger.v3.oas.annotations.info.Info;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 @OpenAPIDefinition(info = @Info(
         title = "Barbershop booking service",
@@ -15,6 +16,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
         )
 ))
 @SpringBootApplication
+@EnableAspectJAutoProxy(proxyTargetClass=true)
 public class TmsBookingProjectApplication {
     public static void main(String[] args) {
         SpringApplication.run(TmsBookingProjectApplication.class, args);

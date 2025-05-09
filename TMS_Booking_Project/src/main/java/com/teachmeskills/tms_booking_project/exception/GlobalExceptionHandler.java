@@ -55,7 +55,7 @@ public class GlobalExceptionHandler {
             if (ife.getTargetType() != null && ife.getTargetType().isEnum()) {
                 errorMessage = String.format("Invalid value '%s' for field '%s'. Allowed values: %s",
                         ife.getValue(),
-                        ife.getPath().get(ife.getPath().size()-1).getFieldName(),
+                        ife.getPath().get(ife.getPath().size() - 1).getFieldName(),
                         Arrays.toString(ife.getTargetType().getEnumConstants()));
             }
         }
