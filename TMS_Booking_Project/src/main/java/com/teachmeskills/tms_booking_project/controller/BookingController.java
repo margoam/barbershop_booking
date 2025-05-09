@@ -3,6 +3,7 @@ package com.teachmeskills.tms_booking_project.controller;
 import com.teachmeskills.tms_booking_project.model.Booking;
 import com.teachmeskills.tms_booking_project.model.dto.BookingRequest;
 import com.teachmeskills.tms_booking_project.model.dto.BookingResponse;
+import com.teachmeskills.tms_booking_project.model.dto.BookingUpdateRequest;
 import com.teachmeskills.tms_booking_project.service.BookingService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -50,7 +51,7 @@ public class BookingController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<BookingResponse> updateBooking(@PathVariable Long id, @RequestBody @Valid Booking request) {
+    public ResponseEntity<BookingResponse> updateBooking(@PathVariable Long id, @RequestBody @Valid BookingUpdateRequest request) {
         Optional<Booking> booking = Optional.ofNullable(bookingService.update(id, request));
         if (booking.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.CONFLICT);

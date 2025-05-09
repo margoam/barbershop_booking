@@ -16,7 +16,7 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
         )
 ))
 @SpringBootApplication
-@EnableAspectJAutoProxy(proxyTargetClass=true)
+@EnableAspectJAutoProxy(proxyTargetClass = true)
 public class TmsBookingProjectApplication {
     public static void main(String[] args) {
         SpringApplication.run(TmsBookingProjectApplication.class, args);

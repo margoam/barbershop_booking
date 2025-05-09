@@ -171,6 +171,5 @@ public class BarberScheduleService {
             throw new IllegalArgumentException("Minimum slot duration is 30 minutes");
         }
     }
-
 }
 

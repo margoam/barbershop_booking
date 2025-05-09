@@ -43,7 +43,7 @@ public class UserController {
     @ApiResponse(responseCode = "404", description = "User not found")
     @GetMapping("/{id}")
     public ResponseEntity<UserResponse> getUserById(@Parameter(description = "ID of the user")
-                                                        @PathVariable Long id) {
+                                                    @PathVariable Long id) {
         Optional<UserResponse> userResponse = Optional.ofNullable(userService.getUserById(id));
         if (userResponse.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -74,7 +74,7 @@ public class UserController {
     @Operation(summary = "Delete user")
     @DeleteMapping("/{id}")
     public ResponseEntity<HttpStatus> deleteUser(@Parameter(description = "ID of the user to delete")
-                                                     @PathVariable Long id) {
+                                                 @PathVariable Long id) {
         try {
             userService.deleteUser(id);
             return ResponseEntity.noContent().build();

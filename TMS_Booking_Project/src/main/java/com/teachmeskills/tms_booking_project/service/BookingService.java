@@ -3,9 +3,10 @@ package com.teachmeskills.tms_booking_project.service;
 import com.teachmeskills.tms_booking_project.model.*;
 import com.teachmeskills.tms_booking_project.model.dto.BookingRequest;
 import com.teachmeskills.tms_booking_project.model.dto.BookingResponse;
+import com.teachmeskills.tms_booking_project.model.dto.BookingUpdateRequest;
 import com.teachmeskills.tms_booking_project.repository.*;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,73 +47,68 @@ public class BookingService {
 
     @Transactional
     public Booking createBooking(BookingRequest bookingRequest) {
+        validateBookingRequest(bookingRequest);
+
         User user = userRepository.findById(bookingRequest.userId())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
         Barber barber = barberRepository.findById(bookingRequest.barberId())
-                .orElseThrow(() -> new IllegalArgumentException("Barber not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Barber not found"));
         BarberSrv service = serviceRepository.findById(bookingRequest.serviceId())
-                .orElseThrow(() -> new IllegalArgumentException("Service not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Service not found"));
 
-        BarberSchedule schedule = barberScheduleRepository.findByBarberAndAvailableTrueAndBookedFalseAndStartTimeAfter(
-                        barber, bookingRequest.appointmentTime())
-                .stream()
-                .filter(s -> s.getStartTime().equals(bookingRequest.appointmentTime()))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Selected time is unavailable"));
+        LocalDateTime appointmentTime = bookingRequest.appointmentTime();
+        int durationMinutes = service.getDurationMinutes();
+        LocalDateTime endTime = appointmentTime.plusMinutes(durationMinutes);
 
-        BigDecimal finalPrice = service.getPrice();
-        if (user.isSubscribed()) {
-            finalPrice = finalPrice.multiply(BigDecimal.valueOf(0.9));
-            finalPrice = finalPrice.setScale(2, RoundingMode.HALF_UP);
-            logger.info("Applied 10% discount for subscribed user {}", user.getEmail());
-        }
+        BarberSchedule schedule = barberScheduleRepository
+                .findAvailableSlotForBooking(barber, appointmentTime, endTime)
+                .orElseThrow(() -> new IllegalStateException("Selected time is not available"));
 
-        if (bookingRequest.appointmentTime().isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("Appointment time must be in the future");
-        }
+        BigDecimal finalPrice = calculateFinalPrice(service.getPrice(), user.isSubscribed());
 
-        if (!service.isActive()) {
-            throw new IllegalArgumentException("Service is not available");
-        }
+        Booking booking = createNewBooking(user, barber, service, appointmentTime, finalPrice);
+        updateScheduleAfterBooking(schedule, appointmentTime, endTime);
 
-        Booking booking = Booking.builder()
-                .user(user)
-                .barber(barber)
-                .service(service)
-                .appointmentTime(bookingRequest.appointmentTime())
-                .pricePaid(finalPrice)
-                .status(Status.CONFIRMED)
-                .createdAt(LocalDateTime.now())
-                .build();
+        logger.info("Booking created: {} for user {} at {}, duration {} min, price: {}",
+                booking.getId(), user.getEmail(), appointmentTime, durationMinutes, finalPrice);
 
-        Booking saved = bookingRepository.save(booking);
-
-        schedule.setBooked(true);
-        barberScheduleRepository.save(schedule);
-
-        logger.info("Created booking with id: {} for user {}. Final price: {}",
-                saved.getId(), user.getEmail(), finalPrice);
-
-        return saved;
+        return booking;
     }
 
     @Transactional
-    public Booking update(Long id, Booking updated) {
+    public Booking update(Long id, BookingUpdateRequest updateRequest) {
         Booking existing = getById(id);
-        existing.setAppointmentTime(updated.getAppointmentTime());
-        existing.setPricePaid(updated.getPricePaid());
-        existing.setCreatedAt(updated.getCreatedAt());
-        existing.setStatus(updated.getStatus());
-        existing.setUser(updated.getUser());
-        existing.setBarber(updated.getBarber());
-        existing.setService(updated.getService());
+
+        if (existing.getStatus() == Status.DECLINED) {
+            throw new IllegalStateException("Cannot modify declined booking");
+        }
+
+        if (updateRequest.appointmentTime() != null
+                && !updateRequest.appointmentTime().equals(existing.getAppointmentTime())) {
+            updateBookingTime(existing, updateRequest.appointmentTime());
+        }
+
+        if (updateRequest.status() != null) {
+            existing.setStatus(updateRequest.status());
+        }
+
         logger.info("Updated booking with id: {}", existing.getId());
         return bookingRepository.save(existing);
     }
 
+    @Transactional
     public boolean delete(Long id) {
-        bookingRepository.deleteById(id);
-        logger.info("Deleted booking with id: {}", id);
+        Booking booking = getById(id);
+
+        LocalDateTime startTime = booking.getAppointmentTime();
+        LocalDateTime endTime = startTime.plusMinutes(booking.getService().getDurationMinutes());
+
+        freeUpOldTimeSlot(booking.getBarber(), startTime, endTime);
+
+        bookingRepository.delete(booking);
+
+        logger.info("Deleted booking with id: {} and freed time slot from {} to {}",
+                id, startTime, endTime);
         return true;
     }
 
@@ -130,6 +126,154 @@ public class BookingService {
                 booking.getAppointmentTime(),
                 booking.getCreatedAt()
         );
+    }
+
+    private void validateBookingRequest(BookingRequest bookingRequest) {
+        if (bookingRequest.appointmentTime().isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("Appointment time must be in the future");
+        }
+    }
+
+    private BigDecimal calculateFinalPrice(BigDecimal basePrice, boolean isSubscribed) {
+        if (isSubscribed) {
+            BigDecimal discountedPrice = basePrice.multiply(BigDecimal.valueOf(0.9));
+            return discountedPrice.setScale(2, RoundingMode.HALF_UP);
+        }
+        return basePrice;
+    }
+
+    private Booking createNewBooking(User user, Barber barber, BarberSrv service,
+                                     LocalDateTime time, BigDecimal price) {
+        return bookingRepository.save(Booking.builder()
+                .user(user)
+                .barber(barber)
+                .service(service)
+                .appointmentTime(time)
+                .pricePaid(price)
+                .status(Status.CONFIRMED)
+                .createdAt(LocalDateTime.now())
+                .build());
+    }
+
+    private void updateScheduleAfterBooking(BarberSchedule originalSlot,
+                                            LocalDateTime bookingStart,
+                                            LocalDateTime bookingEnd) {
+
+        if (originalSlot.getStartTime().equals(bookingStart) &&
+                originalSlot.getEndTime().equals(bookingEnd)) {
+            originalSlot.setBooked(true);
+            barberScheduleRepository.save(originalSlot);
+            return;
+        }
+
+        if (originalSlot.getStartTime().equals(bookingStart)) {
+            BarberSchedule remainingSlot = BarberSchedule.builder()
+                    .barber(originalSlot.getBarber())
+                    .startTime(bookingEnd)
+                    .endTime(originalSlot.getEndTime())
+                    .available(true)
+                    .booked(false)
+                    .build();
+            barberScheduleRepository.save(remainingSlot);
+            originalSlot.setEndTime(bookingEnd);
+            originalSlot.setBooked(true);
+            barberScheduleRepository.save(originalSlot);
+            return;
+        }
+
+        if (originalSlot.getEndTime().equals(bookingEnd)) {
+            BarberSchedule remainingSlot = BarberSchedule.builder()
+                    .barber(originalSlot.getBarber())
+                    .startTime(originalSlot.getStartTime())
+                    .endTime(bookingStart)
+                    .available(true)
+                    .booked(false)
+                    .build();
+            barberScheduleRepository.save(remainingSlot);
+            originalSlot.setStartTime(bookingStart);
+            originalSlot.setBooked(true);
+            barberScheduleRepository.save(originalSlot);
+            return;
+        }
+
+        BarberSchedule slotBefore = BarberSchedule.builder()
+                .barber(originalSlot.getBarber())
+                .startTime(originalSlot.getStartTime())
+                .endTime(bookingStart)
+                .available(true)
+                .booked(false)
+                .build();
+
+        BarberSchedule slotAfter = BarberSchedule.builder()
+                .barber(originalSlot.getBarber())
+                .startTime(bookingEnd)
+                .endTime(originalSlot.getEndTime())
+                .available(true)
+                .booked(false)
+                .build();
+
+        barberScheduleRepository.save(slotBefore);
+        barberScheduleRepository.save(slotAfter);
+        originalSlot.setStartTime(bookingStart);
+        originalSlot.setEndTime(bookingEnd);
+        originalSlot.setBooked(true);
+        barberScheduleRepository.save(originalSlot);
+    }
+
+    private void updateBookingTime(Booking booking, LocalDateTime newTime) {
+
+        if (newTime.isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("New appointment time must be in the future");
+        }
+
+        LocalDateTime oldStart = booking.getAppointmentTime();
+        int duration = booking.getService().getDurationMinutes();
+        LocalDateTime oldEnd = oldStart.plusMinutes(duration);
+        LocalDateTime newEnd = newTime.plusMinutes(duration);
+
+        freeUpOldTimeSlot(booking.getBarber(), oldStart, oldEnd);
+
+        BarberSchedule newSchedule = barberScheduleRepository
+                .findAvailableSlotForBooking(booking.getBarber(), newTime, newEnd)
+                .orElseThrow(() -> new IllegalStateException("Selected time is not available"));
+
+        updateScheduleAfterBooking(newSchedule, newTime, newEnd);
+
+        booking.setAppointmentTime(newTime);
+    }
+
+    private void freeUpOldTimeSlot(Barber barber, LocalDateTime startTime, LocalDateTime endTime) {
+
+        List<BarberSchedule> occupiedSlots = barberScheduleRepository
+                .findByBarberAndBookedTrueAndEndTimeAfterAndStartTimeBefore(
+                        barber, startTime, endTime);
+
+        for (BarberSchedule slot : occupiedSlots) {
+
+            if (slot.getStartTime().isBefore(startTime)) {
+                BarberSchedule beforeSlot = BarberSchedule.builder()
+                        .barber(barber)
+                        .startTime(slot.getStartTime())
+                        .endTime(startTime)
+                        .available(true)
+                        .booked(false)
+                        .build();
+                barberScheduleRepository.save(beforeSlot);
+            }
+
+            if (slot.getEndTime().isAfter(endTime)) {
+                BarberSchedule afterSlot = BarberSchedule.builder()
+                        .barber(barber)
+                        .startTime(endTime)
+                        .endTime(slot.getEndTime())
+                        .available(true)
+                        .booked(false)
+                        .build();
+                barberScheduleRepository.save(afterSlot);
+            }
+
+            barberScheduleRepository.delete(slot);
+        }
     }
 }
 
