@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 @Entity
 @Table(name = "barber")
@@ -31,9 +30,6 @@ public class Barber {
 
     @Column(precision = 5)
     private BigDecimal rating;
-
-    @OneToMany(mappedBy = "barber")
-    private List<Booking> bookings;
 
 }
 

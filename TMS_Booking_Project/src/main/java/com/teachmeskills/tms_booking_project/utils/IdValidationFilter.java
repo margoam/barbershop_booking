@@ -14,28 +14,36 @@ import java.io.IOException;
 import java.util.Map;
 
 import static com.teachmeskills.tms_booking_project.constant.EXCLUDED_PATHS;
+import static com.teachmeskills.tms_booking_project.constant.SWAGGER_PATHS;
 
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class IdValidationFilter extends OncePerRequestFilter {
 
     @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getRequestURI();
+
+        for (String swaggerPath : SWAGGER_PATHS) {
+            if (path.startsWith(swaggerPath)) {
+                return true;
+            }
+        }
+        return EXCLUDED_PATHS.stream().anyMatch(path::contains);
+    }
+
+    @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
+        // Проверка ID в path (только для соответствующих URL)
         String[] pathParts = request.getRequestURI().split("/");
-
         if (pathParts.length >= 4) {
             String pathId = pathParts[3];
-
-            // Пропускаем специальные пути
-            if (!EXCLUDED_PATHS.contains(pathId)) {
-                if (pathId.equals("null") || pathId.equals("0") || pathId.isEmpty() || !pathId.matches("^\\d+$")) {
-                    response.setStatus(HttpStatus.BAD_REQUEST.value());
-                    response.getWriter().write("{\"error\":\"Invalid path ID\"}");
-                    return;
-                }
+            if (pathId.equals("null") || pathId.equals("0") || pathId.isEmpty() || !pathId.matches("^\\d+$")) {
+                sendErrorResponse(response, "Invalid path ID");
+                return;
             }
         }
 
@@ -44,10 +52,7 @@ public class IdValidationFilter extends OncePerRequestFilter {
             if (entry.getKey().endsWith("Id")) {
                 for (String value : entry.getValue()) {
                     if (value == null || !value.matches("^\\d+$")) {
-                        response.setStatus(HttpStatus.BAD_REQUEST.value());
-                        response.getWriter().write(
-                                String.format("{\"error\":\"Invalid %s value\"}", entry.getKey())
-                        );
+                        sendErrorResponse(response, String.format("Invalid %s value", entry.getKey()));
                         return;
                     }
                 }
@@ -55,5 +60,11 @@ public class IdValidationFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    private void sendErrorResponse(HttpServletResponse response, String message) throws IOException {
+        response.setStatus(HttpStatus.BAD_REQUEST.value());
+        response.setContentType("application/json");
+        response.getWriter().write(String.format("{\"error\":\"%s\"}", message));
     }
 }

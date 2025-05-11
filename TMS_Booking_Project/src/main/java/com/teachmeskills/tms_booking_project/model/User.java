@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
 @Table(name = "\"user\"")
@@ -38,8 +37,5 @@ public class User {
 
     @Column(name = "is_subscribed", nullable = false)
     private boolean isSubscribed;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<Booking> bookings;
 }
 
