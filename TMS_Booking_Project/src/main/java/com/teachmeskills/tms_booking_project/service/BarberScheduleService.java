@@ -69,7 +69,7 @@ public class BarberScheduleService {
     @Transactional
     public BarberSchedule update(Long id, BarberScheduleUpdateRequest updated) {
         BarberSchedule existing = barberScheduleRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Schedule is not found with id: " + id));
+                .orElseThrow(() -> new EntityNotFoundException("Schedule is not found with id: " + id));
 
         boolean hasChanged = false;
 
