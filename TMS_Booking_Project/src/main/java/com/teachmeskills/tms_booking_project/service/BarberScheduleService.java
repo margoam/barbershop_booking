@@ -19,7 +19,6 @@ import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 import static com.teachmeskills.tms_booking_project.constant.WORKING_HOUR_END;
 import static com.teachmeskills.tms_booking_project.constant.WORKING_HOUR_START;
@@ -45,12 +44,8 @@ public class BarberScheduleService {
     }
 
     public BarberSchedule getById(Long id) {
-        Optional<BarberSchedule> barberSchedule = barberScheduleRepository.findById(id);
-        if (barberSchedule.isPresent()) {
-            return barberSchedule.get();
-        } else {
-            throw new IllegalArgumentException("Schedule not found");
-        }
+        return barberScheduleRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Schedule not found"));
     }
 
     @Transactional
@@ -106,22 +101,20 @@ public class BarberScheduleService {
     }
 
     @Transactional
-    public boolean delete(Long id) {
-        if (barberScheduleRepository.existsById(id)) {
-            barberScheduleRepository.deleteById(id);
-            logger.info("Deleted schedule with id: {}", id);
-            return true;
-        }
-        return false;
+    public void delete(Long id) {
+        barberScheduleRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Schedule not found"));
+        barberScheduleRepository.deleteById(id);
+        logger.info("Deleted schedule with id: {}", id);
     }
 
     public List<AvailableSlotsResponse> getAvailableSlots(Long barberId, Long serviceId) {
 
         Barber barber = barberRepository.findById(barberId)
-                .orElseThrow(() -> new IllegalArgumentException("Barber not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Barber not found"));
 
         BarberSrv service = serviceRepository.findById(serviceId)
-                .orElseThrow(() -> new IllegalArgumentException("Service not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Service not found"));
 
         int requiredMinutes = service.getDurationMinutes();
         LocalDateTime now = LocalDateTime.now();

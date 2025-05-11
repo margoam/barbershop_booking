@@ -7,7 +7,6 @@ import com.teachmeskills.tms_booking_project.service.BarberScheduleService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/schedules")
@@ -38,23 +36,14 @@ class BarberScheduleController {
     @Operation(summary = "Get schedule by ID")
     @GetMapping("/{id}")
     public ResponseEntity<BarberSchedule> getScheduleById(@PathVariable @Parameter(description = "Schedule id") Long id) {
-        Optional<BarberSchedule> schedule = Optional.ofNullable(scheduleService.getById(id));
-        if (schedule.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<>(schedule.get(), HttpStatus.OK);
+        BarberSchedule schedule = scheduleService.getById(id);
+        return new ResponseEntity<>(schedule, HttpStatus.OK);
     }
 
     @Operation(summary = "Create new schedule")
     @PostMapping("/create")
     public ResponseEntity<BarberSchedule> createSchedule(@RequestBody @Valid BarberSchedule schedule) {
-        try {
-            return new ResponseEntity<>(scheduleService.create(schedule), HttpStatus.CREATED);
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        return new ResponseEntity<>(scheduleService.create(schedule), HttpStatus.CREATED);
     }
 
     @Operation(summary = "Update schedule")
@@ -63,13 +52,7 @@ class BarberScheduleController {
             @Parameter(description = "ID of schedule to be updated")
             @PathVariable Long id,
             @RequestBody @Valid BarberScheduleUpdateRequest request) {
-        try {
-            return ResponseEntity.ok(scheduleService.update(id, request));
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        return ResponseEntity.ok(scheduleService.update(id, request));
     }
 
     @Operation(summary = "Delete schedule")
@@ -77,12 +60,8 @@ class BarberScheduleController {
     public ResponseEntity<HttpStatus> deleteSchedule(
             @Parameter(description = "ID of schedule to be deleted")
             @PathVariable Long id) {
-        try {
-            scheduleService.delete(id);
-            return ResponseEntity.noContent().build();
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
+        scheduleService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 
     @Operation(summary = "Get available slots")
@@ -92,10 +71,6 @@ class BarberScheduleController {
             @RequestParam Long barberId,
             @Parameter(description = "Service ID")
             @RequestParam Long serviceId) {
-        try {
-            return ResponseEntity.ok(scheduleService.getAvailableSlots(barberId, serviceId));
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
+        return ResponseEntity.ok(scheduleService.getAvailableSlots(barberId, serviceId));
     }
 }

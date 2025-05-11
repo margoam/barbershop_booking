@@ -11,14 +11,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
+
+import static com.teachmeskills.tms_booking_project.constant.EXCLUDED_PATHS;
 
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class IdValidationFilter extends OncePerRequestFilter {
-
-    private static final List<String> EXCLUDED_PATHS = List.of("create", "all", "available-slots");
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,

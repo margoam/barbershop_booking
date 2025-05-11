@@ -42,7 +42,7 @@ public class BookingService {
 
     public Booking getById(Long id) {
         return bookingRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Booking not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Booking not found"));
     }
 
     @Transactional
@@ -62,7 +62,7 @@ public class BookingService {
 
         BarberSchedule schedule = barberScheduleRepository
                 .findAvailableSlotForBooking(barber, appointmentTime, endTime)
-                .orElseThrow(() -> new IllegalStateException("Selected time is not available"));
+                .orElseThrow(() -> new IllegalArgumentException("Selected time is not available"));
 
         BigDecimal finalPrice = calculateFinalPrice(service.getPrice(), user.isSubscribed());
 
@@ -80,7 +80,7 @@ public class BookingService {
         Booking existing = getById(id);
 
         if (existing.getStatus() == Status.DECLINED) {
-            throw new IllegalStateException("Cannot modify declined booking");
+            throw new IllegalArgumentException("Cannot modify declined booking");
         }
 
         if (updateRequest.appointmentTime() != null
@@ -159,71 +159,83 @@ public class BookingService {
                                             LocalDateTime bookingStart,
                                             LocalDateTime bookingEnd) {
 
+        if (bookingStart.isBefore(originalSlot.getStartTime())) {
+            throw new IllegalArgumentException("Booking starts before slot");
+        }
+        if (bookingEnd.isAfter(originalSlot.getEndTime())) {
+            throw new IllegalArgumentException("Booking ends after slot");
+        }
+
         if (originalSlot.getStartTime().equals(bookingStart) &&
                 originalSlot.getEndTime().equals(bookingEnd)) {
             originalSlot.setBooked(true);
+            originalSlot.setAvailable(false);
             barberScheduleRepository.save(originalSlot);
             return;
         }
 
         if (originalSlot.getStartTime().equals(bookingStart)) {
-            BarberSchedule remainingSlot = BarberSchedule.builder()
-                    .barber(originalSlot.getBarber())
-                    .startTime(bookingEnd)
-                    .endTime(originalSlot.getEndTime())
-                    .available(true)
-                    .booked(false)
-                    .build();
-            barberScheduleRepository.save(remainingSlot);
+            BarberSchedule newSlot = new BarberSchedule();
+            newSlot.setBarber(originalSlot.getBarber());
+            newSlot.setStartTime(bookingEnd);
+            newSlot.setEndTime(originalSlot.getEndTime());
+            newSlot.setAvailable(true);
+            newSlot.setBooked(false);
+
+            barberScheduleRepository.save(newSlot);
+
             originalSlot.setEndTime(bookingEnd);
             originalSlot.setBooked(true);
+            originalSlot.setAvailable(false);
             barberScheduleRepository.save(originalSlot);
             return;
         }
 
         if (originalSlot.getEndTime().equals(bookingEnd)) {
-            BarberSchedule remainingSlot = BarberSchedule.builder()
-                    .barber(originalSlot.getBarber())
-                    .startTime(originalSlot.getStartTime())
-                    .endTime(bookingStart)
-                    .available(true)
-                    .booked(false)
-                    .build();
-            barberScheduleRepository.save(remainingSlot);
+            BarberSchedule newSlot = new BarberSchedule();
+            newSlot.setBarber(originalSlot.getBarber());
+            newSlot.setStartTime(originalSlot.getStartTime());
+            newSlot.setEndTime(bookingStart);
+            newSlot.setAvailable(true);
+            newSlot.setBooked(false);
+
+            barberScheduleRepository.save(newSlot);
+
             originalSlot.setStartTime(bookingStart);
             originalSlot.setBooked(true);
+            originalSlot.setAvailable(false);
             barberScheduleRepository.save(originalSlot);
             return;
         }
 
-        BarberSchedule slotBefore = BarberSchedule.builder()
-                .barber(originalSlot.getBarber())
-                .startTime(originalSlot.getStartTime())
-                .endTime(bookingStart)
-                .available(true)
-                .booked(false)
-                .build();
+        BarberSchedule beforeSlot = new BarberSchedule();
+        beforeSlot.setBarber(originalSlot.getBarber());
+        beforeSlot.setStartTime(originalSlot.getStartTime());
+        beforeSlot.setEndTime(bookingStart);
+        beforeSlot.setAvailable(true);
+        beforeSlot.setBooked(false);
 
-        BarberSchedule slotAfter = BarberSchedule.builder()
-                .barber(originalSlot.getBarber())
-                .startTime(bookingEnd)
-                .endTime(originalSlot.getEndTime())
-                .available(true)
-                .booked(false)
-                .build();
+        BarberSchedule afterSlot = new BarberSchedule();
+        afterSlot.setBarber(originalSlot.getBarber());
+        afterSlot.setStartTime(bookingEnd);
+        afterSlot.setEndTime(originalSlot.getEndTime());
+        afterSlot.setAvailable(true);
+        afterSlot.setBooked(false);
 
-        barberScheduleRepository.save(slotBefore);
-        barberScheduleRepository.save(slotAfter);
+        barberScheduleRepository.save(beforeSlot);
+        barberScheduleRepository.save(afterSlot);
+
         originalSlot.setStartTime(bookingStart);
         originalSlot.setEndTime(bookingEnd);
         originalSlot.setBooked(true);
+        originalSlot.setAvailable(false);
         barberScheduleRepository.save(originalSlot);
     }
 
     private void updateBookingTime(Booking booking, LocalDateTime newTime) {
 
         if (newTime.isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("New appointment time must be in the future");
+            throw new IllegalArgumentException("Appointment time must be in the future");
         }
 
         LocalDateTime oldStart = booking.getAppointmentTime();
@@ -235,7 +247,7 @@ public class BookingService {
 
         BarberSchedule newSchedule = barberScheduleRepository
                 .findAvailableSlotForBooking(booking.getBarber(), newTime, newEnd)
-                .orElseThrow(() -> new IllegalStateException("Selected time is not available"));
+                .orElseThrow(() -> new IllegalArgumentException("Selected time is not available"));
 
         updateScheduleAfterBooking(newSchedule, newTime, newEnd);
 
@@ -243,32 +255,28 @@ public class BookingService {
     }
 
     private void freeUpOldTimeSlot(Barber barber, LocalDateTime startTime, LocalDateTime endTime) {
-
         List<BarberSchedule> occupiedSlots = barberScheduleRepository
                 .findByBarberAndBookedTrueAndEndTimeAfterAndStartTimeBefore(
                         barber, startTime, endTime);
 
         for (BarberSchedule slot : occupiedSlots) {
-
             if (slot.getStartTime().isBefore(startTime)) {
-                BarberSchedule beforeSlot = BarberSchedule.builder()
-                        .barber(barber)
-                        .startTime(slot.getStartTime())
-                        .endTime(startTime)
-                        .available(true)
-                        .booked(false)
-                        .build();
+                BarberSchedule beforeSlot = new BarberSchedule();
+                beforeSlot.setBarber(barber);
+                beforeSlot.setStartTime(slot.getStartTime());
+                beforeSlot.setEndTime(startTime);
+                beforeSlot.setAvailable(true);
+                beforeSlot.setBooked(false);
                 barberScheduleRepository.save(beforeSlot);
             }
 
             if (slot.getEndTime().isAfter(endTime)) {
-                BarberSchedule afterSlot = BarberSchedule.builder()
-                        .barber(barber)
-                        .startTime(endTime)
-                        .endTime(slot.getEndTime())
-                        .available(true)
-                        .booked(false)
-                        .build();
+                BarberSchedule afterSlot = new BarberSchedule();
+                afterSlot.setBarber(barber);
+                afterSlot.setStartTime(endTime);
+                afterSlot.setEndTime(slot.getEndTime());
+                afterSlot.setAvailable(true);
+                afterSlot.setBooked(false);
                 barberScheduleRepository.save(afterSlot);
             }
 

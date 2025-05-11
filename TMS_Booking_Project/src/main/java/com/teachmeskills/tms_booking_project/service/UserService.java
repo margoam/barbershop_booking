@@ -7,6 +7,7 @@ import com.teachmeskills.tms_booking_project.model.dto.UserRegistrationRequest;
 import com.teachmeskills.tms_booking_project.model.dto.UserResponse;
 import com.teachmeskills.tms_booking_project.model.dto.UserUpdateRequest;
 import com.teachmeskills.tms_booking_project.repository.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,13 +78,13 @@ public class UserService {
     public UserResponse getUserById(Long id) {
         return userRepository.findById(id)
                 .map(this::mapToResponse)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
     }
 
     @Transactional
     public UserResponse updateUser(Long id, UserUpdateRequest request) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
         boolean hasChanged = false;
 
@@ -127,14 +128,11 @@ public class UserService {
     }
 
     @Transactional
-    public boolean deleteUser(Long id) {
-        if (userRepository.existsById(id)) {
-            userRepository.deleteById(id);
-            logger.info("Removed user with id: {}", id);
-            return true;
-        } else {
-            return false;
-        }
+    public void deleteUser(Long id) {
+        userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+        userRepository.deleteById(id);
+        logger.info("Removed user with id: {}", id);
     }
 
     public UserResponse mapToResponse(User user) {

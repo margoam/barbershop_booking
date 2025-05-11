@@ -9,7 +9,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,7 +17,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/users")
@@ -44,11 +42,8 @@ public class UserController {
     @GetMapping("/{id}")
     public ResponseEntity<UserResponse> getUserById(@Parameter(description = "ID of the user")
                                                     @PathVariable Long id) {
-        Optional<UserResponse> userResponse = Optional.ofNullable(userService.getUserById(id));
-        if (userResponse.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<>(userResponse.get(), HttpStatus.OK);
+        UserResponse userResponse = userService.getUserById(id);
+        return new ResponseEntity<>(userResponse, HttpStatus.OK);
     }
 
     @Operation(summary = "Update user")
@@ -57,49 +52,29 @@ public class UserController {
             @Parameter(description = "ID of the user to update")
             @PathVariable Long id,
             @RequestBody @Valid UserUpdateRequest request) {
-
-        try {
-            UserResponse updatedUser = userService.updateUser(id, request);
-            return ResponseEntity.ok(updatedUser);
-        } catch (IllegalArgumentException e) {
-            return switch (e.getMessage()) {
-                case "User not found" -> ResponseEntity.notFound().build();
-                case "Email already in use" -> ResponseEntity.status(HttpStatus.CONFLICT).build();
-                case "No changes detected" -> ResponseEntity.status(HttpStatus.NOT_MODIFIED).build();
-                default -> ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-            };
-        }
+        UserResponse updatedUser = userService.updateUser(id, request);
+        return new ResponseEntity<>(updatedUser, HttpStatus.OK);
     }
 
     @Operation(summary = "Delete user")
     @DeleteMapping("/{id}")
     public ResponseEntity<HttpStatus> deleteUser(@Parameter(description = "ID of the user to delete")
                                                  @PathVariable Long id) {
-        try {
-            userService.deleteUser(id);
-            return ResponseEntity.noContent().build();
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
+        userService.deleteUser(id);
+        return ResponseEntity.noContent().build();
     }
 
     @Operation(summary = "Create user (admin only)")
     @PostMapping("/admin")
     public ResponseEntity<UserResponse> createUser(@RequestBody @Valid UserCreateRequest request) {
-        Optional<UserResponse> user = Optional.ofNullable(userService.createUser(request));
-        if (user.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
-        }
-        return new ResponseEntity<>(user.get(), HttpStatus.CREATED);
+        UserResponse user = userService.createUser(request);
+        return new ResponseEntity<>(user, HttpStatus.CREATED);
     }
 
     @Operation(summary = "Register new user")
     @PostMapping("/create")
     public ResponseEntity<UserResponse> registerUser(@RequestBody @Valid UserRegistrationRequest request) {
-        Optional<UserResponse> user = Optional.ofNullable(userService.register(request));
-        if (user.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
-        }
-        return new ResponseEntity<>(user.get(), HttpStatus.CREATED);
+        UserResponse user = userService.register(request);
+        return new ResponseEntity<>(user, HttpStatus.CREATED);
     }
 }

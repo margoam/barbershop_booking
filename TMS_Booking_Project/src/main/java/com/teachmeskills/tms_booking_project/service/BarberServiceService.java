@@ -2,8 +2,8 @@ package com.teachmeskills.tms_booking_project.service;
 
 import com.teachmeskills.tms_booking_project.model.BarberSrv;
 import com.teachmeskills.tms_booking_project.repository.ServiceRepository;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +28,7 @@ public class BarberServiceService {
 
     public BarberSrv getById(Long id) {
         return serviceRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Service not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Service not found"));
     }
 
     public BarberSrv create(BarberSrv service) {
@@ -47,10 +47,11 @@ public class BarberServiceService {
         return serviceRepository.save(existing);
     }
 
-    public boolean delete(Long id) {
+    public void delete(Long id) {
+        serviceRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Service not found"));
         serviceRepository.deleteById(id);
         logger.info("Removed service with id: {}", id);
-        return true;
     }
 }
 

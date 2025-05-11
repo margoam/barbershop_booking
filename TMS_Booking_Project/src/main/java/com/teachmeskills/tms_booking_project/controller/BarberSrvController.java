@@ -9,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/services")
@@ -29,28 +28,19 @@ class BarberSrvController {
 
     @PostMapping("/create")
     public ResponseEntity<BarberSrv> createService(@RequestBody @Valid BarberSrv service) {
-        Optional<BarberSrv> barberSrv = Optional.ofNullable(serviceService.create(service));
-        if (barberSrv.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
-        }
-        return new ResponseEntity<>(barberSrv.get(), HttpStatus.CREATED);
+        BarberSrv barberSrv = serviceService.create(service);
+        return new ResponseEntity<>(barberSrv, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<BarberSrv> updateService(@PathVariable Long id, @RequestBody @Valid BarberSrv service) {
-        Optional<BarberSrv> barberSrv = Optional.ofNullable(serviceService.update(id, service));
-        if (barberSrv.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
-        }
-        return new ResponseEntity<>(barberSrv.get(), HttpStatus.OK);
+        BarberSrv barberSrv = serviceService.update(id, service);
+        return new ResponseEntity<>(barberSrv, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<HttpStatus> deleteService(@PathVariable Long id) {
-        boolean result = serviceService.delete(id);
-        if (!result) {
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
-        }
+        serviceService.delete(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

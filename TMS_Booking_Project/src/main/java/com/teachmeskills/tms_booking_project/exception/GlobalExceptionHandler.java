@@ -2,6 +2,7 @@ package com.teachmeskills.tms_booking_project.exception;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
@@ -22,6 +23,10 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Map<String, String>> handleIllegalArgument(IllegalArgumentException ex) {
+        if (ex.getMessage().contains("No changes detected")) {
+            logger.error("No changes detected: {}", ex.getMessage());
+            return new ResponseEntity<>(HttpStatus.NOT_MODIFIED);
+        }
         logger.error("Bad request: {}", ex.getMessage());
         return ResponseEntity.status(400).body(Map.of("error", "BAD_REQUEST", "message", ex.getMessage()));
     }
