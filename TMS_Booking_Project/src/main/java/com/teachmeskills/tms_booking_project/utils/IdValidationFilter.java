@@ -37,7 +37,6 @@ public class IdValidationFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
-        // Проверка ID в path (только для соответствующих URL)
         String[] pathParts = request.getRequestURI().split("/");
         if (pathParts.length >= 4) {
             String pathId = pathParts[3];
