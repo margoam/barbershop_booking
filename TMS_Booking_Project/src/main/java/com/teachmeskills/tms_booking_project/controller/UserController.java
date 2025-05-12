@@ -10,6 +10,7 @@ import com.teachmeskills.tms_booking_project.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,7 @@ public class UserController {
     private final SecurityUtils securityUtils;
 
     @Operation(summary = "Get all users")
+    @SecurityRequirement(name = "JWT")
     @GetMapping("/all")
     public ResponseEntity<List<UserResponse>> getAllUsers() {
         List<UserResponse> userResponses = userService.getAllUsers();
@@ -42,6 +44,7 @@ public class UserController {
 
     @Operation(summary = "Get user by ID")
     @ApiResponse(responseCode = "404", description = "User not found")
+    @SecurityRequirement(name = "JWT")
     @GetMapping("/{id}")
     public ResponseEntity<UserResponse> getUserById(@PathVariable Long id) {
         User currentUser = securityUtils.getCurrentUser();
@@ -54,6 +57,7 @@ public class UserController {
     }
 
     @Operation(summary = "Update user")
+    @SecurityRequirement(name = "JWT")
     @PutMapping("/{id}")
     public ResponseEntity<UserResponse> updateUser(
             @Parameter(description = "ID of the user to update")
@@ -68,6 +72,7 @@ public class UserController {
     }
 
     @Operation(summary = "Delete user")
+    @SecurityRequirement(name = "JWT")
     @DeleteMapping("/{id}")
     public ResponseEntity<HttpStatus> deleteUser(@Parameter(description = "ID of the user to delete")
                                                  @PathVariable Long id) {
@@ -76,6 +81,7 @@ public class UserController {
     }
 
     @Operation(summary = "Create user (admin only)")
+    @SecurityRequirement(name = "JWT")
     @PostMapping("/admin")
     public ResponseEntity<UserResponse> createUser(@RequestBody @Valid UserCreateRequest request) {
         UserResponse user = userService.createUser(request);

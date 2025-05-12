@@ -9,6 +9,7 @@ import com.teachmeskills.tms_booking_project.service.BookingService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +33,7 @@ public class BookingController {
     @Operation(summary = "Get all bookings")
     @ApiResponse(responseCode = "200", description = "List of bookings found")
     @ApiResponse(responseCode = "404", description = "No bookings found")
+    @SecurityRequirement(name = "JWT")
     @GetMapping("/all")
     public ResponseEntity<List<BookingResponse>> getAllBookings() {
         List<BookingResponse> bookings = bookingService.getAll().stream()
@@ -45,6 +47,7 @@ public class BookingController {
     @Operation(summary = "Get booking by ID")
     @ApiResponse(responseCode = "200", description = "Booking found")
     @ApiResponse(responseCode = "404", description = "Booking not found")
+    @SecurityRequirement(name = "JWT")
     @GetMapping("/{id}")
     public ResponseEntity<BookingResponse> getBookingById(
             @Parameter(description = "ID of the booking to retrieve")
@@ -57,6 +60,7 @@ public class BookingController {
     @ApiResponse(responseCode = "400", description = "Invalid input data")
     @ApiResponse(responseCode = "404", description = "User, barber or service not found")
     @ApiResponse(responseCode = "409", description = "Time slot not available")
+    @SecurityRequirement(name = "JWT")
     @PostMapping("/create")
     public ResponseEntity<BookingResponse> createBooking(
             @RequestBody @Valid BookingRequest request) {
@@ -70,6 +74,7 @@ public class BookingController {
     @ApiResponse(responseCode = "400", description = "Invalid input data")
     @ApiResponse(responseCode = "404", description = "Booking not found")
     @ApiResponse(responseCode = "409", description = "Cannot modify declined booking or time slot not available")
+    @SecurityRequirement(name = "JWT")
     @PutMapping("/{id}")
     public ResponseEntity<BookingResponse> updateBooking(
             @Parameter(description = "ID of the booking to update")
@@ -88,6 +93,7 @@ public class BookingController {
     @Operation(summary = "Delete booking")
     @ApiResponse(responseCode = "204", description = "Booking deleted successfully")
     @ApiResponse(responseCode = "404", description = "Booking not found")
+    @SecurityRequirement(name = "JWT")
     @DeleteMapping("/{id}")
     public ResponseEntity<HttpStatus> deleteBooking(
             @Parameter(description = "ID of the booking to delete")
