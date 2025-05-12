@@ -12,7 +12,9 @@ public interface constant {
             "available-slots",
             "swagger-ui",
             "api-docs",
-            "webjars"
+            "webjars",
+            "login",
+            "admin"
     );
 
     List<String> SWAGGER_PATHS = List.of(

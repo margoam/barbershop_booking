@@ -1,8 +1,10 @@
 package com.teachmeskills.tms_booking_project.controller;
 
+import com.teachmeskills.tms_booking_project.model.User;
 import com.teachmeskills.tms_booking_project.model.dto.BookingRequest;
 import com.teachmeskills.tms_booking_project.model.dto.BookingResponse;
 import com.teachmeskills.tms_booking_project.model.dto.BookingUpdateRequest;
+import com.teachmeskills.tms_booking_project.security.SecurityUtils;
 import com.teachmeskills.tms_booking_project.service.BookingService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -25,6 +27,7 @@ import java.util.List;
 public class BookingController {
 
     private final BookingService bookingService;
+    private final SecurityUtils securityUtils;
 
     @Operation(summary = "Get all bookings")
     @ApiResponse(responseCode = "200", description = "List of bookings found")
@@ -73,8 +76,13 @@ public class BookingController {
             @PathVariable Long id,
             @RequestBody @Valid BookingUpdateRequest request) {
 
-        BookingResponse response = bookingService.mapToResponse(bookingService.update(id, request));
-        return ResponseEntity.ok(response);
+        User currentUser = securityUtils.getCurrentUser();
+
+        if (!securityUtils.isCurrentUserAdmin() && !bookingService.isOwner(id, currentUser.getId())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        return ResponseEntity.ok(bookingService.mapToResponse(bookingService.update(id, request)));
     }
 
     @Operation(summary = "Delete booking")
