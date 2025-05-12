@@ -53,13 +53,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/users/create", "/api/barbers/all", "/api/services/all",
                                 "/api/schedules/available-slots/**").permitAll()
-                        .requestMatchers(
-                                "/swagger-ui.html",
-                                "/swagger-ui/**",
-                                "/v3/api-docs/**",
-                                "/swagger-resources/**",
-                                "/webjars/**"
-                        ).permitAll()
+                        .requestMatchers("/api/auth/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/api/users/admin", "/api/schedules/all").hasRole("ADMIN")
                         .requestMatchers("/api/barbers/**", "/api/schedules/all").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/bookings/**").hasAnyRole("USER", "ADMIN")
@@ -75,14 +69,6 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/api/barbers/**").hasAnyRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/barbers/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
-                )
-                .httpBasic(httpBasic -> httpBasic
-                        .realmName("Swagger API")
-                        .authenticationEntryPoint(new BasicAuthenticationEntryPoint())
-                )
-                .formLogin(form -> form
-                        .loginPage("/swagger-login")
-                        .permitAll()
                 )
                 .exceptionHandling(e -> e
                         .authenticationEntryPoint(customAuthenticationEntryPoint)
@@ -104,24 +90,5 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    public InMemoryUserDetailsManager userDetailsService() {
-        UserDetails swaggerUser = User.withUsername("admin")
-                .password(passwordEncoder().encode("admin"))
-                .roles("ADMIN")
-                .build();
-
-        return new InMemoryUserDetailsManager(swaggerUser);
-    }
-
-    private static class BasicAuthenticationEntryPoint implements AuthenticationEntryPoint {
-        @Override
-        public void commence(HttpServletRequest request, HttpServletResponse response,
-                             AuthenticationException authException) throws IOException {
-            response.addHeader("WWW-Authenticate", "Basic realm=\"Swagger API\"");
-            response.sendError(HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED.getReasonPhrase());
-        }
     }
 }
