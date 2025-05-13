@@ -2,7 +2,7 @@ package com.teachmeskills.tms_booking_project.constant;
 
 import java.util.List;
 
-public interface constant {
+public interface Constant {
 
     int WORKING_HOUR_START = 10;
     int WORKING_HOUR_END = 20;
