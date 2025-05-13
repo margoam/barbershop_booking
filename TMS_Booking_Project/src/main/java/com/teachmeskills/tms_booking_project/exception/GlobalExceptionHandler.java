@@ -1,10 +1,13 @@
 package com.teachmeskills.tms_booking_project.exception;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import io.jsonwebtoken.JwtException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -37,6 +40,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(404).body(Map.of("error", "NOT_FOUND", "message", ex.getMessage()));
     }
 
+    @ExceptionHandler(AuthenticationServiceException.class)
+    public ResponseEntity<Map<String, String>> handleAuthenticationServiceException(AuthenticationServiceException ex) {
+        logger.error("Authentication is unsuccessful: {}", ex.getMessage());
+        return ResponseEntity.status(401).body(Map.of("error", "NOT AUTHORIZED", "message", ex.getMessage()));
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> handleValidationExceptions(
             MethodArgumentNotValidException ex) {
@@ -67,6 +76,18 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.badRequest()
                 .body(Map.of("error", "BAD_REQUEST", "message", errorMessage));
+    }
+
+    @ExceptionHandler(value = AccessDeniedException.class)
+    public ResponseEntity<String> accessDeniedExceptionHandler(AccessDeniedException exception) {
+        logger.error(exception.getMessage());
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(value = JwtException.class)
+    public ResponseEntity<String> jwtExceptionHandler(JwtException exception) {
+        logger.error(exception.getMessage());
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(Exception.class)

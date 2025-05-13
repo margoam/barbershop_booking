@@ -5,6 +5,7 @@ import com.teachmeskills.tms_booking_project.service.BarberServiceService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -40,6 +41,7 @@ public class BarberSrvController {
             description = "Creates a new barber service (admin only)")
     @ApiResponse(responseCode = "201", description = "Service created successfully")
     @ApiResponse(responseCode = "400", description = "Invalid input data")
+    @SecurityRequirement(name = "JWT")
     @PostMapping("/create")
     public ResponseEntity<BarberSrv> createService(
             @Parameter(description = "Service object to be created", required = true)
@@ -53,6 +55,7 @@ public class BarberSrvController {
     @ApiResponse(responseCode = "200", description = "Service updated successfully")
     @ApiResponse(responseCode = "400", description = "Invalid input data")
     @ApiResponse(responseCode = "404", description = "Service not found")
+    @SecurityRequirement(name = "JWT")
     @PutMapping("/{id}")
     public ResponseEntity<BarberSrv> updateService(
             @Parameter(description = "ID of the service to update", required = true)
@@ -66,6 +69,7 @@ public class BarberSrvController {
             description = "Deletes a barber service (admin only)")
     @ApiResponse(responseCode = "204", description = "Service deleted successfully")
     @ApiResponse(responseCode = "404", description = "Service not found")
+    @SecurityRequirement(name = "JWT")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteService(
             @Parameter(description = "ID of the service to delete", required = true)

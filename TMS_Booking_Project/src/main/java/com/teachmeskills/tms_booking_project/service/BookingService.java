@@ -283,5 +283,11 @@ public class BookingService {
             barberScheduleRepository.delete(slot);
         }
     }
+
+    public boolean isOwner(Long bookingId, Long userId) {
+        return bookingRepository.findById(bookingId)
+                .map(booking -> booking.getUser().getId().equals(userId))
+                .orElse(false);
+    }
 }
 
