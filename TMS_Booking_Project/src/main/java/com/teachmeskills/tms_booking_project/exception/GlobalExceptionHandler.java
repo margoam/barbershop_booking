@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -37,6 +38,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, String>> handleEntityNotFound(EntityNotFoundException ex) {
         logger.error("Entity not found: {}", ex.getMessage());
         return ResponseEntity.status(404).body(Map.of("error", "NOT_FOUND", "message", ex.getMessage()));
+    }
+
+    @ExceptionHandler(AuthenticationServiceException.class)
+    public ResponseEntity<Map<String, String>> handleAuthenticationServiceException(AuthenticationServiceException ex) {
+        logger.error("Authentication is unsuccessful: {}", ex.getMessage());
+        return ResponseEntity.status(401).body(Map.of("error", "NOT AUTHORIZED", "message", ex.getMessage()));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

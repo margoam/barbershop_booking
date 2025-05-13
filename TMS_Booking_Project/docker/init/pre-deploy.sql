@@ -5,10 +5,10 @@ VALUES
     ('Michael Brown', 'michael.brown@barbershop.com', '+1987654321', 4),
     ('David Wilson', 'david.wilson@barbershop.com', '+1122334455', 5);
 
--- 2. Create admin user
+-- 2. Create admin user, password = 1234567891011
 INSERT INTO public."user" (full_name, email, password, role, registered_at, is_subscribed)
 VALUES
-    ('Admin User', 'admin@barbershop.com', 'adminpassword', 'ADMIN', NOW(), true);
+    ('Admin User', 'test@test.com', '$2a$10$NTGpqciaNf.1j/xquiWv4eN7zGjEY8E7vWNkiAEit9KXgyQ76aiT.', 'ADMIN', NOW(), true);
 
 -- 3. Create services
 INSERT INTO public.service (name, description, price, active, duration)
