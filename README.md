@@ -42,7 +42,7 @@ Key tables:
 - `booking` - Manages appointment records
 - `barber_schedule` - Tracks barber availability
 
-See full [DDL script](docker/init/db_ddl.sql) in the repository.
+See full [DDL script](TMS_Booking_Project/docker/init/db_ddl.sql) in the repository.
 
 ## API Endpoints
 
