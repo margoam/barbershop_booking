@@ -1,0 +1,703 @@
+{
+	"info": {
+		"_postman_id": "85dfe644-e3c9-4428-9d9c-a543581854d4",
+		"name": "Barber Booking Diploma",
+		"description": "Complete collection for testing Barber Booking System API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "12821608"
+	},
+	"item": [
+		{
+			"name": "User Management",
+			"item": [
+				{
+					"name": "Register User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"fullName\": \"John Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"securepassword123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/users/create",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create User (Admin)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"fullName\": \"John Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"securepassword13\",\n  \"role\": \"USER\",\n  \"isSubscribed\": \"true\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/users/admin",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"admin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Users",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/users/all",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"all"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get User by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/users/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update User",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"fullName\": \"John Updated\",\n  \"email\": \"john.updated@example.com\",\n  \"password\": \"newpassword123\",\n  \"role\": \"USER\",\n  \"isSubscribed\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/users/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete User",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/users/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Barber Operations",
+			"item": [
+				{
+					"name": "Get All Barbers",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/barbers/all",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"barbers",
+								"all"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Barber by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/barbers/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"barbers",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Barber",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"fullName\": \"New Barber\",\n  \"email\": \"barber.new@example.com\",\n  \"phone\": \"+1234567890\",\n  \"rating\": 5\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/barbers/create",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"barbers",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Barber",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"fullName\": \"Updated Barber\",\n  \"email\": \"barber.updated@example.com\",\n  \"phone\": \"+0987654321\",\n  \"rating\": 4\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/barbers/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"barbers",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Barber",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/barbers/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"barbers",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Service Management",
+			"item": [
+				{
+					"name": "Get All Services",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/services/all",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"services",
+								"all"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Service",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"New Service\",\n  \"description\": \"Service description\",\n  \"price\": 35.00,\n  \"duration\": 45\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/services/create",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"services",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Service",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Updated Service\",\n  \"description\": \"Updated description\",\n  \"price\": 40.00,\n  \"duration\": 50\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/services/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"services",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Service",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/services/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"services",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Schedule Management",
+			"item": [
+				{
+					"name": "Get All Schedules",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/schedules/all",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"schedules",
+								"all"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Available Slots",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/schedules/available-slots?barberId=1&serviceId=1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"schedules",
+								"available-slots"
+							],
+							"query": [
+								{
+									"key": "barberId",
+									"value": "1"
+								},
+								{
+									"key": "serviceId",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Schedule",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"barberId\": 1,\n  \"startTime\": \"2025-05-20T10:00:00\",\n  \"endTime\": \"2025-05-20T11:00:00\",\n  \"isAvailable\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/schedules/create",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"schedules",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Schedule",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"startTime\": \"2024-05-20T11:00:00\",\n  \"endTime\": \"2024-05-20T12:00:00\",\n  \"isAvailable\": false\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/schedules/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"schedules",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Schedule",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/schedules/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"schedules",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Booking Operations",
+			"item": [
+				{
+					"name": "Get All Bookings",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/bookings/all",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"bookings",
+								"all"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Booking by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/bookings/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"bookings",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Booking",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"userId\": 1,\n  \"barberId\": 1,\n  \"serviceId\": 1,\n  \"appointmentTime\": \"2025-05-20T10:00:00\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/bookings/create",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"bookings",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Booking",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"appointmentTime\": \"2024-05-20T11:00:00\",\n  \"status\": \"CONFIRMED\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/bookings/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"bookings",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Booking",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/bookings/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"bookings",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Auth",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let jsonData = pm.response.json();\r",
+							"pm.collectionVariables.set(\"token\", jsonData.token); \r",
+							"pm.environment.set(\"token\", jsonData.token);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": " {\r\n  \"email\": \"test@test.com\",\r\n  \"password\": \"1234567891011\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api/auth/login",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080"
+		},
+		{
+			"key": "token",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
