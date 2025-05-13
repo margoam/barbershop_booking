@@ -87,11 +87,15 @@ See full [DDL script](docker/init/db_ddl.sql) in the repository.
 ### Test users
 - Admin - test@test.com, password = 1234567891011
 
-### Swagger and actuator usage
+## Swagger and actuator usage
 
 - Swagger is available http://localhost:8080/swagger-ui/index.html
 - Actuator is available http://localhost:8080/actuator
 - Creds: admin/admin
+
+## Testing
+
+- Postman collection is available here [collection](TMS_Booking_Project/src/main/resources/Barber_Booking_Diploma.postman_collection.json)
 
 ## Setup
 
