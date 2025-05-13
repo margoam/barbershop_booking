@@ -20,8 +20,8 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static com.teachmeskills.tms_booking_project.constant.WORKING_HOUR_END;
-import static com.teachmeskills.tms_booking_project.constant.WORKING_HOUR_START;
+import static com.teachmeskills.tms_booking_project.constant.constant.WORKING_HOUR_END;
+import static com.teachmeskills.tms_booking_project.constant.constant.WORKING_HOUR_START;
 
 @Service
 

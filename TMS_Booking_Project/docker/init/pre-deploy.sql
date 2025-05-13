@@ -68,7 +68,7 @@ DO $$
             END LOOP;
     END $$;
 
--- Create a test customer user
+-- Create a test customer user, password = 1234567891011
 INSERT INTO public."user" (full_name, email, password, role, registered_at, is_subscribed)
 VALUES
-    ('Test Customer', 'customer@test.com', 'customer123', 'USER', NOW(), false);
+    ('Test Customer', 'customer@test.com', '$2a$10$NTGpqciaNf.1j/xquiWv4eN7zGjEY8E7vWNkiAEit9KXgyQ76aiT.', 'USER', NOW(), false);

@@ -13,8 +13,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.Map;
 
-import static com.teachmeskills.tms_booking_project.constant.EXCLUDED_PATHS;
-import static com.teachmeskills.tms_booking_project.constant.SWAGGER_PATHS;
+import static com.teachmeskills.tms_booking_project.constant.constant.EXCLUDED_PATHS;
+import static com.teachmeskills.tms_booking_project.constant.constant.SWAGGER_PATHS;
 
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)

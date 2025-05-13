@@ -1,4 +1,4 @@
-package com.teachmeskills.tms_booking_project;
+package com.teachmeskills.tms_booking_project.constant;
 
 import java.util.List;
 
