@@ -20,10 +20,6 @@ public class BarberSchedule {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Setter
-    @Transient
-    private Long barberId;
-
     @ManyToOne(optional = false)
     @JoinColumn(name = "barber_id", nullable = false)
     @NotNull(message = "barber_id is required")

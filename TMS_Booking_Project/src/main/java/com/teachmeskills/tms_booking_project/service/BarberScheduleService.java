@@ -4,6 +4,7 @@ import com.teachmeskills.tms_booking_project.model.Barber;
 import com.teachmeskills.tms_booking_project.model.BarberSchedule;
 import com.teachmeskills.tms_booking_project.model.BarberSrv;
 import com.teachmeskills.tms_booking_project.model.dto.AvailableSlotsResponse;
+import com.teachmeskills.tms_booking_project.model.dto.BarberScheduleRequest;
 import com.teachmeskills.tms_booking_project.model.dto.BarberScheduleUpdateRequest;
 import com.teachmeskills.tms_booking_project.repository.BarberRepository;
 import com.teachmeskills.tms_booking_project.repository.BarberScheduleRepository;
@@ -49,19 +50,25 @@ public class BarberScheduleService {
     }
 
     @Transactional
-    public BarberSchedule create(BarberSchedule schedule) {
-        if (schedule.getBarberId() == null) {
+    public BarberSchedule create(BarberScheduleRequest request) {
+        if (request.barberId() == null) {
             throw new IllegalArgumentException("barber_id is required");
         }
 
-        Barber barber = barberRepository.findById(schedule.getBarberId())
-                .orElseThrow(() -> new EntityNotFoundException("Barber not found with id: " + schedule.getBarberId()));
+        Barber barber = barberRepository.findById(request.barberId())
+                .orElseThrow(() -> new EntityNotFoundException("Barber not found with id: " + request.barberId()));
 
-        validateTimeSlot(schedule.getStartTime());
-        validateTimeSlot(schedule.getEndTime());
-        checkTimeSlotAvailability(barber.getId(), schedule.getStartTime(), schedule.getEndTime());
+        validateTimeSlot(request.startTime());
+        validateTimeSlot(request.endTime());
+        checkTimeSlotAvailability(barber.getId(), request.startTime(), request.endTime());
 
-        schedule.setBarber(barber);
+        BarberSchedule schedule = BarberSchedule.builder()
+                .barber(barber)
+                .startTime(request.startTime())
+                .endTime(request.endTime())
+                .available(request.isAvailable() != null ? request.isAvailable() : true)
+                .booked(false)
+                .build();
         logger.info("Creating new schedule: {}", schedule);
         return barberScheduleRepository.save(schedule);
     }

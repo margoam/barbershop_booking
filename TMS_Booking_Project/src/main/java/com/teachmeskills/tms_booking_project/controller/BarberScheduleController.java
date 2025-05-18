@@ -2,6 +2,7 @@ package com.teachmeskills.tms_booking_project.controller;
 
 import com.teachmeskills.tms_booking_project.model.BarberSchedule;
 import com.teachmeskills.tms_booking_project.model.dto.AvailableSlotsResponse;
+import com.teachmeskills.tms_booking_project.model.dto.BarberScheduleRequest;
 import com.teachmeskills.tms_booking_project.model.dto.BarberScheduleUpdateRequest;
 import com.teachmeskills.tms_booking_project.service.BarberScheduleService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -46,7 +47,7 @@ class BarberScheduleController {
     @Operation(summary = "Create new schedule")
     @SecurityRequirement(name = "JWT")
     @PostMapping("/create")
-    public ResponseEntity<BarberSchedule> createSchedule(@RequestBody @Valid BarberSchedule schedule) {
+    public ResponseEntity<BarberSchedule> createSchedule(@RequestBody @Valid BarberScheduleRequest schedule) {
         return new ResponseEntity<>(scheduleService.create(schedule), HttpStatus.CREATED);
     }
 

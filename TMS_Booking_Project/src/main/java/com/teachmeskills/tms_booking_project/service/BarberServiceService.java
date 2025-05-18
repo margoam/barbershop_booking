@@ -43,6 +43,7 @@ public class BarberServiceService {
         existing.setDescription(updatedService.getDescription());
         existing.setPrice(updatedService.getPrice());
         existing.setActive(updatedService.isActive());
+        existing.setDurationMinutes(updatedService.getDurationMinutes());
         logger.info("Updated service with id: {}", existing.getId());
         return serviceRepository.save(existing);
     }

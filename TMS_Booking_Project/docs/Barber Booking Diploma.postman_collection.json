@@ -305,7 +305,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"name\": \"New Service\",\n  \"description\": \"Service description\",\n  \"price\": 35.00,\n  \"duration\": 45\n}"
+							"raw": "{\n  \"name\": \"New Service\",\n  \"description\": \"Service description\",\n  \"price\": 35.00,\n  \"durationMinutes\": 45\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/services/create",
@@ -333,17 +333,17 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"name\": \"Updated Service\",\n  \"description\": \"Updated description\",\n  \"price\": 40.00,\n  \"duration\": 50\n}"
+							"raw": "{\n  \"name\": \"Updated Service\",\n  \"description\": \"Updated description\",\n  \"price\": 40.00,\n  \"active\": true,\n  \"durationMinutes\": 50\n}"
 						},
 						"url": {
-							"raw": "{{base_url}}/api/services/1",
+							"raw": "{{base_url}}/api/services/7",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
 								"services",
-								"1"
+								"7"
 							]
 						}
 					},

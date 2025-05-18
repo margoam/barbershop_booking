@@ -95,7 +95,7 @@ See full [DDL script](TMS_Booking_Project/docker/init/db_ddl.sql) in the reposit
 
 ## Testing
 
-- Postman collection is available here [collection](TMS_Booking_Project/src/main/resources/Barber_Booking_Diploma.postman_collection.json)
+- Postman collection is available here [collection](TMS_Booking_Project/docs/Barber%20Booking%20Diploma.postman_collection.json)
 
 ## Setup
 
@@ -110,7 +110,7 @@ This project comes with Docker support for easy deployment and development. Foll
 1. Clone the repository:
    ```bash
    git clone https://github.com/margoam/barbershop_booking.git
-   cd barbershop_booking
+   cd barbershop_booking/TMS_Booking_Project
 2. Build and start the containers:
     ```bash
    docker-compose up -d
